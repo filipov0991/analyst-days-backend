@@ -24,7 +24,7 @@ uvicorn app.main:app --reload --port 8000 --no-access-log
 - Swagger: [http://localhost:8000/docs](http://localhost:8000/docs)
 - OpenAPI: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
 
-Frontend находится в отдельном соседнем репозитории `analyst-days-frontend`; его публичная ссылка пока не предоставлена. Он должен проксировать `/api/*` на backend, передавать `Cookie`, `Set-Cookie`, `Origin`, сохранять `Cache-Control: no-store`. До включения кнопок выбора нужен один GET `/api/me/program`. Этот репозиторий frontend не изменяет; интеграция с ним отдельно не проверена.
+Frontend находится в отдельном соседнем репозитории `analyst-days-frontend`; [репозиторий на GitHub](https://github.com/filipov0991/analyst-days-frontend). Он должен проксировать `/api/*` на backend, передавать `Cookie`, `Set-Cookie`, `Origin`, сохранять `Cache-Control: no-store`. До включения кнопок выбора нужен один GET `/api/me/program`. Этот репозиторий frontend не изменяет; интеграция проверена — [результаты](docs/integration-checks.md).
 
 ## Конфигурация
 
@@ -94,4 +94,4 @@ docker run --rm -p 127.0.0.1:8000:8000 -v analyst-days-data:/data \
 - [ERD и sequence](docs/architecture.md), [Отчёт проверок](docs/test-report.md)
 - [Промпты](docs/prompts.md), [Сценарий видео](docs/video-script.md), [Чек-лист сдачи](docs/checklist.md)
 
-MVP не содержит регистрации, редактирования каталога, миграций схемы, импорта официальной программы или периодической очистки истёкших сессий. SQLite рассчитана на небольшой локальный демонстрационный сервис. Health проверяет только `SELECT 1`, а не заполненность схемы. Frontend, мобильный сценарий, Docker и публичное размещение требуют отдельных проверок. Детали и результаты — в отчёте.
+MVP не содержит регистрации, редактирования каталога, миграций схемы, импорта официальной программы или периодической очистки истёкших сессий. SQLite рассчитана на небольшой локальный демонстрационный сервис. Health проверяет только `SELECT 1`, а не заполненность схемы. Совместная работа с frontend и адаптивность проверены в Chrome; Docker и публичное размещение не проверялись. Детали и результаты — в отчёте.
