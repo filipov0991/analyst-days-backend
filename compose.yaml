@@ -1,0 +1,56 @@
+name: analyst-days
+
+services:
+  init-db:
+    image: analyst-days-backend:local
+    pull_policy: never
+    command: ["python", "-m", "app.seed"]
+    environment:
+      DATABASE_URL: sqlite:////data/app.db
+    volumes:
+      - backend-data:/data
+    restart: "no"
+
+  backend:
+    build: .
+    image: analyst-days-backend:local
+    depends_on:
+      init-db:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: sqlite:////data/app.db
+      APP_ENV: development
+      COOKIE_SECURE: "false"
+      ALLOWED_ORIGINS: http://localhost:3000
+    volumes:
+      - backend-data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../analyst-days-frontend
+      args:
+        BACKEND_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  backend-data:
